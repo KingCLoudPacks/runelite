@@ -35,39 +35,34 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-public class PlayerIndicatorsTileOverlay extends Overlay
-{
-	private final PlayerIndicatorsService playerIndicatorsService;
-	private final PlayerIndicatorsConfig config;
+public class PlayerIndicatorsTileOverlay extends Overlay {
+    private final PlayerIndicatorsService playerIndicatorsService;
+    private final PlayerIndicatorsConfig config;
 
-	@Inject
-	private PlayerIndicatorsTileOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService)
-	{
-		this.config = config;
-		this.playerIndicatorsService = playerIndicatorsService;
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.MED);
-	}
+    @Inject
+    private PlayerIndicatorsTileOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService) {
+        this.config = config;
+        this.playerIndicatorsService = playerIndicatorsService;
+        setLayer(OverlayLayer.ABOVE_SCENE);
+        setPosition(OverlayPosition.DYNAMIC);
+        setPriority(OverlayPriority.MED);
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (!config.drawTiles())
-		{
-			return null;
-		}
+    @Override
+    public Dimension render(Graphics2D graphics) {
+        if (!config.drawTiles()) {
+            return null;
+        }
 
-		playerIndicatorsService.forEachPlayer((player, color) ->
-		{
-			final Polygon poly = player.getCanvasTilePoly();
+        playerIndicatorsService.forEachPlayer((player, color) ->
+        {
+            final Polygon poly = player.getCanvasTilePoly();
 
-			if (poly != null)
-			{
-				OverlayUtil.renderPolygon(graphics, poly, color);
-			}
-		});
+            if (poly != null) {
+                OverlayUtil.renderPolygon(graphics, poly, color);
+            }
+        });
 
-		return null;
-	}
+        return null;
+    }
 }

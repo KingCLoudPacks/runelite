@@ -37,40 +37,45 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
 @Singleton
-public class PlayerIndicatorsMinimapOverlay extends Overlay
-{
-	private final PlayerIndicatorsService playerIndicatorsService;
-	private final PlayerIndicatorsConfig config;
+public class PlayerIndicatorsMinimapOverlay extends Overlay {
+    private final PlayerIndicatorsService playerIndicatorsService;
+    private final PlayerIndicatorsConfig config;
 
-	@Inject
-	private PlayerIndicatorsMinimapOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService)
-	{
-		this.config = config;
-		this.playerIndicatorsService = playerIndicatorsService;
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.HIGH);
-	}
+    @Inject
+    private PlayerIndicatorsMinimapOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService) {
+        this.config = config;
+        this.playerIndicatorsService = playerIndicatorsService;
+        setLayer(OverlayLayer.ABOVE_WIDGETS);
+        setPosition(OverlayPosition.DYNAMIC);
+        setPriority(OverlayPriority.HIGH);
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		playerIndicatorsService.forEachPlayer((player, color) -> renderPlayerOverlay(graphics, player, color));
-		return null;
-	}
+    @Override
+    public Dimension render(Graphics2D graphics) {
+        playerIndicatorsService.forEachPlayer((player, color) -> renderPlayerOverlay(graphics, player, color));
+        return null;
+    }
 
-	private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color)
-	{
-		final String name = actor.getName().replace('\u00A0', ' ');
+    private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color) {
+        final String name = actor.getName().replace('\u00A0', ' ');
 
-		if (config.drawMinimapNames())
-		{
-			final net.runelite.api.Point minimapLocation = actor.getMinimapLocation();
+        if (config.drawMinimapNames()) {
+            final net.runelite.api.Point minimapLocation = actor.getMinimapLocation();
 
-			if (minimapLocation != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
-			}
-		}
-	}
+            if (minimapLocation != null) {
+                OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
+            }
+        }
+
+        if (actor.isFriend()) {
+            final net.runelite.api.Point minimapLocation = actor.getMinimapLocation();
+
+            if (minimapLocation != null) {
+                graphics.setColor(Color.BLACK);
+                graphics.fillOval(minimapLocation.getX() - 2, minimapLocation.getY() - 2 + 1, 5, 5);
+                graphics.setColor(color);
+                graphics.fillOval(minimapLocation.getX() - 2, minimapLocation.getY() - 2, 5, 5);
+            }
+        }
+    }
 }

@@ -40,65 +40,56 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
 @Singleton
-public class PlayerIndicatorsOverlay extends Overlay
-{
-	private final PlayerIndicatorsService playerIndicatorsService;
-	private final PlayerIndicatorsConfig config;
-	private final ClanManager clanManager;
+public class PlayerIndicatorsOverlay extends Overlay {
+    private final PlayerIndicatorsService playerIndicatorsService;
+    private final PlayerIndicatorsConfig config;
+    private final ClanManager clanManager;
 
-	@Inject
-	private PlayerIndicatorsOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService,
-		ClanManager clanManager)
-	{
-		this.config = config;
-		this.playerIndicatorsService = playerIndicatorsService;
-		this.clanManager = clanManager;
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.MED);
-	}
+    @Inject
+    private PlayerIndicatorsOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService,
+                                    ClanManager clanManager) {
+        this.config = config;
+        this.playerIndicatorsService = playerIndicatorsService;
+        this.clanManager = clanManager;
+        setPosition(OverlayPosition.DYNAMIC);
+        setPriority(OverlayPriority.MED);
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		playerIndicatorsService.forEachPlayer((player, color) -> renderPlayerOverlay(graphics, player, color));
-		return null;
-	}
+    @Override
+    public Dimension render(Graphics2D graphics) {
+        playerIndicatorsService.forEachPlayer((player, color) -> renderPlayerOverlay(graphics, player, color));
+        return null;
+    }
 
-	private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color)
-	{
-		if (!config.drawOverheadPlayerNames())
-		{
-			return;
-		}
+    private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color) {
+        if (!config.drawOverheadPlayerNames()) {
+            return;
+        }
 
-		String name = actor.getName().replace('\u00A0', ' ');
-		int offset = actor.getLogicalHeight() + 40;
-		Point textLocation = actor.getCanvasTextLocation(graphics, name, offset);
+        String name = actor.getName().replace('\u00A0', ' ');
+        int offset = actor.getLogicalHeight() + 40;
+        Point textLocation = actor.getCanvasTextLocation(graphics, name, offset);
 
-		if (textLocation != null)
-		{
-			if (config.showClanRanks() && actor.isClanMember())
-			{
-				ClanMemberRank rank = clanManager.getRank(name);
+        if (textLocation != null) {
+            if (config.showClanRanks() && actor.isClanMember()) {
+                ClanMemberRank rank = clanManager.getRank(name);
 
-				if (rank != ClanMemberRank.UNRANKED)
-				{
-					BufferedImage clanchatImage = clanManager.getClanImage(rank);
+                if (rank != ClanMemberRank.UNRANKED) {
+                    BufferedImage clanchatImage = clanManager.getClanImage(rank);
 
-					if (clanchatImage != null)
-					{
-						int width = clanchatImage.getWidth();
-						int textHeight = graphics.getFontMetrics().getHeight() - graphics.getFontMetrics().getMaxDescent();
-						Point imageLocation = new Point(textLocation.getX() - width / 2 - 1, textLocation.getY() - textHeight / 2 - clanchatImage.getHeight() / 2);
-						OverlayUtil.renderImageLocation(graphics, imageLocation, clanchatImage);
+                    if (clanchatImage != null) {
+                        int width = clanchatImage.getWidth();
+                        int textHeight = graphics.getFontMetrics().getHeight() - graphics.getFontMetrics().getMaxDescent();
+                        Point imageLocation = new Point(textLocation.getX() - width / 2 - 1, textLocation.getY() - textHeight / 2 - clanchatImage.getHeight() / 2);
+                        OverlayUtil.renderImageLocation(graphics, imageLocation, clanchatImage);
 
-						// move text
-						textLocation = new Point(textLocation.getX() + width / 2, textLocation.getY());
-					}
-				}
-			}
+                        // move text
+                        textLocation = new Point(textLocation.getX() + width / 2, textLocation.getY());
+                    }
+                }
+            }
 
-			OverlayUtil.renderTextLocation(graphics, textLocation, name, color);
-		}
-	}
+            OverlayUtil.renderTextLocation(graphics, textLocation, name, color);
+        }
+    }
 }
