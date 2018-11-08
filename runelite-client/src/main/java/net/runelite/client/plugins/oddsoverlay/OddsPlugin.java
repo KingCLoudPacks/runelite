@@ -3,6 +3,9 @@ package net.runelite.client.plugins.oddsoverlay;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Provides;
+import com.loudpacks.script.ApiProvider;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,11 +22,15 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.npchighlight.NpcIndicatorsConfig;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.hiscore.HiscoreClient;
@@ -54,6 +61,9 @@ public class OddsPlugin extends Plugin {
     private double rangedOdds;
 
     @Inject
+	private ApiProvider api;
+
+    @Inject
     HiscoreClient hiscoreClient;
     @Inject
     private Client client;
@@ -61,8 +71,17 @@ public class OddsPlugin extends Plugin {
     private OverlayManager overlayManager;
     @Inject
     private OddsOverlay oddsOverlay;
+    @Inject
+	private OddsConfig config;
 
-    private static final String CHALLENGE = "Challenge";
+	@Provides
+	OddsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(OddsConfig.class);
+	}
+
+
+	private static final String CHALLENGE = "Challenge";
     private static final String KICK_OPTION = "Kick";
     private static final ImmutableList<String> BEFORE_OPTIONS = ImmutableList.of("Add friend", "Remove friend", KICK_OPTION);
     private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message");
@@ -148,6 +167,7 @@ public class OddsPlugin extends Plugin {
                             getTheirSkillMap().get(Skill.DEFENCE),
                             getTheirSkillMap().get(Skill.HITPOINTS),
                             getTheirSkillMap().get(Skill.RANGED)));
+
                     rangedOdds = OddsCalculator.calculateRangedOdds(new OddsPlayer(client.getRealSkillLevel(Skill.ATTACK),
                             client.getRealSkillLevel(Skill.STRENGTH),
                             client.getRealSkillLevel(Skill.DEFENCE),
@@ -157,6 +177,23 @@ public class OddsPlugin extends Plugin {
                             getTheirSkillMap().get(Skill.DEFENCE),
                             getTheirSkillMap().get(Skill.HITPOINTS),
                             getTheirSkillMap().get(Skill.RANGED)));
+
+                    if(config.autoAccept() && meleeOdds >= config.oddsThreshold() * 1.0f)
+					{
+						final Widget parent = client.getWidget(162, 58);
+						if(parent != null)
+						{
+							for(Widget child : parent.getDynamicChildren())
+							{
+								if(child != null && child.getText().contains(user) && child.getText().toLowerCase().endsWith("wishes to duel with you.</col>"))
+								{
+									final Point p = child.getCanvasLocation();
+									final Rectangle rect = new Rectangle(p.getX(), p.getY(), child.getWidth(), child.getHeight());
+									api.getInputHandler().leftClick(rect);
+								}
+							}
+						}
+					}
 
                 }
             } catch (IOException ex) {

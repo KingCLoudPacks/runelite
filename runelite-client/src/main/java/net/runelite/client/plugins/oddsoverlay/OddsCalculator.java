@@ -74,52 +74,58 @@ public class OddsCalculator {
         int hpMe = me.getHp();
         int hpOpp = opp.getHp();
 
-        for (int i = 0; i < trials; i++) {
-
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                while (hpMe > 0 || hpOpp > 0) {
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
-                        hpMe -= ThreadLocalRandom.current().nextInt(1, (int) maxHitOpp + 1);
-                        if (hpMe <= 0) {
-                            break;
-                        }
-                    }
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
-                        hpOpp -= ThreadLocalRandom.current().nextInt(1, (int) maxHitMe + 1);
-                        if (hpOpp <= 0) {
-                            myWins++;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                while (hpMe > 0 || hpOpp > 0) {
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
-                        hpOpp -= ThreadLocalRandom.current().nextInt(1, (int) maxHitMe + 1);
-                        if (hpOpp <= 0) {
-                            myWins++;
-                            break;
-                        }
-                    }
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
-                        hpMe -= ThreadLocalRandom.current().nextInt(1, (int) maxHitOpp + 1);
-                        if (hpMe <= 0) {
-                            break;
-                        }
-                    }
-                }
-            }
+		myWins = getMyWins(me, opp, (int) maxHitMe, (int) maxHitOpp, hitChanceMe, hitChanceOpp, myWins, trials, hpMe, hpOpp);
 
 
-            hpMe = me.getHp();
-            hpOpp = opp.getHp();
-        }
-
-
-        return 100 * (double) myWins / (double) trials;
+		return 100 * (double) myWins / (double) trials;
     }
 
-    public static double calculateRangedOdds(OddsPlayer me, OddsPlayer opp) {
+	private static int getMyWins(OddsPlayer me, OddsPlayer opp, int maxHitMe, int maxHitOpp, double hitChanceMe, double hitChanceOpp, int myWins, int trials, int hpMe, int hpOpp)
+	{
+		for (int i = 0; i < trials; i++) {
+
+			if (ThreadLocalRandom.current().nextBoolean()) {
+				while (hpMe > 0 || hpOpp > 0) {
+					if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
+						hpMe -= ThreadLocalRandom.current().nextInt(1, maxHitOpp + 1);
+						if (hpMe <= 0) {
+							break;
+						}
+					}
+					if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
+						hpOpp -= ThreadLocalRandom.current().nextInt(1, maxHitMe + 1);
+						if (hpOpp <= 0) {
+							myWins++;
+							break;
+						}
+					}
+				}
+			} else {
+				while (hpMe > 0 || hpOpp > 0) {
+					if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
+						hpOpp -= ThreadLocalRandom.current().nextInt(1, maxHitMe + 1);
+						if (hpOpp <= 0) {
+							myWins++;
+							break;
+						}
+					}
+					if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
+						hpMe -= ThreadLocalRandom.current().nextInt(1, maxHitOpp + 1);
+						if (hpMe <= 0) {
+							break;
+						}
+					}
+				}
+			}
+
+
+			hpMe = me.getHp();
+			hpOpp = opp.getHp();
+		}
+		return myWins;
+	}
+
+	public static double calculateRangedOdds(OddsPlayer me, OddsPlayer opp) {
         double maxHitMe = getMaxRangeHit(me);
         double maxHitOpp = getMaxRangeHit(opp);
 
@@ -138,49 +144,10 @@ public class OddsCalculator {
         int hpMe = me.getHp();
         int hpOpp = opp.getHp();
 
-        for (int i = 0; i < trials; i++) {
-
-            if (ThreadLocalRandom.current().nextBoolean()) {
-                while (hpMe > 0 || hpOpp > 0) {
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
-                        hpMe -= ThreadLocalRandom.current().nextInt(1, (int) maxHitOpp + 1);
-                        if (hpMe <= 0) {
-                            break;
-                        }
-                    }
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
-                        hpOpp -= ThreadLocalRandom.current().nextInt(1, (int) maxHitMe + 1);
-                        if (hpOpp <= 0) {
-                            myWins++;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                while (hpMe > 0 || hpOpp > 0) {
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceMe) {
-                        hpOpp -= ThreadLocalRandom.current().nextInt(1, (int) maxHitMe + 1);
-                        if (hpOpp <= 0) {
-                            myWins++;
-                            break;
-                        }
-                    }
-                    if (ThreadLocalRandom.current().nextDouble(0, 1.0) <= hitChanceOpp) {
-                        hpMe -= ThreadLocalRandom.current().nextInt(1, (int) maxHitOpp + 1);
-                        if (hpMe <= 0) {
-                            break;
-                        }
-                    }
-                }
-            }
+		myWins = getMyWins(me, opp, (int) maxHitMe, (int) maxHitOpp, hitChanceMe, hitChanceOpp, myWins, trials, hpMe, hpOpp);
 
 
-            hpMe = me.getHp();
-            hpOpp = opp.getHp();
-        }
-
-
-        return 100 * (double) myWins / (double) trials;
+		return 100 * (double) myWins / (double) trials;
     }
 
 

@@ -1,22 +1,25 @@
-package com.loudpacks.script.flickscript;
+package com.loudpacks.script.combat;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.loudpacks.script.ApiProvider;
 import com.loudpacks.script.Script;
 
-public class FlickScript extends Script {
+public class CombatScript extends Script
+{
 
     @Inject
-    public FlickScript(ApiProvider api, EventBus eventBus) {
-        super(api, eventBus);
+    public CombatScript(ApiProvider api, EventBus eventBus) {
+    	super(api, eventBus);
+    	start();
     }
 
     @Override
     public void start() {
         super.start();
-        addTask(new FlickTask(this, api, eventBus));
+        addTask(new GenericFightTask(api, eventBus));
     }
 
 
 }
+

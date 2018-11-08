@@ -9,11 +9,9 @@ public abstract class ScriptTask {
 
     protected final ApiProvider api;
     protected final EventBus eventBus;
-    protected final Script script;
     private boolean hasStarted = false;
 
-    public ScriptTask(Script script, ApiProvider api, EventBus eventBus) {
-        this.script = script;
+    public ScriptTask(ApiProvider api, EventBus eventBus) {
         this.api = api;
         this.eventBus = eventBus;
         eventBus.register(api);
