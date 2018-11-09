@@ -5,9 +5,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OddsCalculator {
 
     private static int getMaxMeleeHit(OddsPlayer p) {
-        final int a = p.getStr() + 3 + 8;
-        final int b = 86;
-        return (int) Math.floor((0.5 + a * (b + 64) / 640));
+		final float a = p.getStr() + 3 + 8;
+		final float b = 86;
+		return (int) Math.floor((0.5 + a * (b + 64) / 640));
     }
 
     private static int getMaxRangeHit(OddsPlayer p) {
@@ -17,19 +17,19 @@ public class OddsCalculator {
     }
 
     private static double getAttackAccuracy(OddsPlayer p, boolean accurate) {
-        final int a = p.getAtt() + ((accurate) ? 3 : 1) + 8;
-        final int b = 90;
+        final float a = p.getAtt() + ((accurate) ? 3 : 1) + 8;
+        final float b = 90;
         return (int) Math.floor(a * (b + 64));
     }
 
     private static int getRangeAccuracy(OddsPlayer p) {
-        final int a = p.getRange() + 0 + 8;
-        final int b = 25;
+        final float a = p.getRange() + 0 + 8;
+        final float b = 25;
         return (int) Math.floor(a * (b + 64));
     }
 
     private static int getDefence(OddsPlayer p, boolean defensive) {
-        final int a = p.getDef() + ((defensive) ? 3 : 0) + 8;
+        final float a = p.getDef() + ((defensive) ? 3 : 0) + 8;
         return (int) Math.floor(a * (64));
     }
 
