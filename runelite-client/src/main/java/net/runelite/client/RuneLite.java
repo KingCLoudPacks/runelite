@@ -188,7 +188,7 @@ public class RuneLite
 			assert assertions = true;
 			if (!assertions)
 			{
-				throw new RuntimeException("Developers should enable assertions; Add `-ea` to your JVM arguments`");
+				//throw new RuntimeException("Developers should enable assertions; Add `-ea` to your JVM arguments`");
 			}
 		}
 

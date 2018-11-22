@@ -16,6 +16,7 @@ import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.VarClientStr;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -41,6 +42,9 @@ public class ApiProvider {
 	@Getter
 	public Inventory inventory = new Inventory();
 
+	@Getter
+	public Prayer prayer = new Prayer();
+
 	@Inject
 	public ItemManager itemManager;
 
@@ -52,6 +56,56 @@ public class ApiProvider {
     public ApiProvider() {
 
     }
+
+    public class Prayer
+	{
+		public Prayer() { }
+
+		public boolean isOpen() {
+			return client.getIntVarcs()[171] == 5;
+		}
+
+		public boolean open() {
+			Widget prayerTab = client.getWidget((client.isResized()) ? WidgetInfo.RESIZABLE_VIEWPORT_PRAYER_TAB : WidgetInfo.FIXED_VIEWPORT_PRAYER_TAB);
+			if (prayerTab != null && !prayerTab.isHidden()) {
+				Rectangle rect = prayerTab.getBounds();
+				inputHandler.leftClick(rect);
+				new ConditionalSleep(1000, 150) {
+					@Override
+					public boolean condition() {
+						return isOpen();
+					}
+				}.sleep();
+				return true;
+			}
+			return false;
+		}
+
+		public boolean flickHeal()
+		{
+			Widget healPrayer = client.getWidget(WidgetInfo.PRAYER_RAPID_HEAL);
+			if (healPrayer != null && !healPrayer.isHidden()) {
+				Rectangle rect = healPrayer.getBounds();
+				inputHandler.leftClick(rect);
+				new ConditionalSleep(1000, ThreadLocalRandom.current().nextInt(350, 500)) {
+					@Override
+					public boolean condition() {
+						return client.getVarbitValue(client.getVarps(), 4111) == 1;
+					}
+				}.sleep();
+				inputHandler.leftClick(rect);
+				new ConditionalSleep(1000, ThreadLocalRandom.current().nextInt(350, 500)) {
+					@Override
+					public boolean condition() {
+						return client.getVarbitValue(client.getVarps(), 4111) == 0;
+					}
+				}.sleep();
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public class Inventory {
 
 		public Inventory() {
@@ -83,10 +137,7 @@ public class ApiProvider {
 		}
 
 		public boolean isOpen() {
-			Widget inventory = client.getWidget(WidgetID.INVENTORY_GROUP_ID, 0);
-			if (inventory == null)
-				return false;
-			return !inventory.isHidden();
+			return client.getIntVarcs()[171] == 3;
 		}
 
 		public boolean open() {
@@ -106,9 +157,14 @@ public class ApiProvider {
 		}
 
 		public boolean contains(int id) {
-			List<WidgetItem> inventory = new ArrayList<>();
-			inventory.addAll(Arrays.asList(queryRunner.runQuery(new InventoryWidgetItemQuery())));
-			Optional<WidgetItem> match = inventory.stream().filter(item -> item.getId() == id && item.getQuantity() > 0).findFirst();
+			Item[] inventory = client.getItemContainer(InventoryID.INVENTORY).getItems();
+			Optional<Item> match = Arrays.asList(inventory).stream().filter(item -> item.getId() == id && item.getQuantity() > 0).findFirst();
+			return match.isPresent();
+		}
+
+		public boolean contains(List<Integer> ids) {
+			Item[] inventory = client.getItemContainer(InventoryID.INVENTORY).getItems();
+			Optional<Item> match = Arrays.asList(inventory).stream().filter(item ->  ids.contains(item.getId()) && item.getQuantity() > 0).findFirst();
 			return match.isPresent();
 		}
 
@@ -117,6 +173,13 @@ public class ApiProvider {
 			List<WidgetItem> inventory = new ArrayList<>();
 			inventory.addAll(Arrays.asList(queryRunner.runQuery(new InventoryWidgetItemQuery())));
 			Optional<WidgetItem> match = inventory.stream().filter(item -> item.getId() == id && item.getQuantity() > 0).findFirst();
+			return (match.isPresent()) ? match.get() : null;
+		}
+
+		public WidgetItem getItem(List<Integer> ids) {
+			List<WidgetItem> inventory = new ArrayList<>();
+			inventory.addAll(Arrays.asList(queryRunner.runQuery(new InventoryWidgetItemQuery())));
+			Optional<WidgetItem> match = inventory.stream().filter(item -> ids.contains(item.getId()) && item.getQuantity() > 0).findFirst();
 			return (match.isPresent()) ? match.get() : null;
 		}
 
@@ -136,6 +199,18 @@ public class ApiProvider {
 			}
 			return false;
 		}
+
+		public boolean interact(List<Integer> ids, ConditionalSleep condition) {
+			WidgetItem item = getItem(ids);
+			if (item != null) {
+				inputHandler.leftClick(item.getCanvasBounds());
+				condition.sleep();
+				return true;
+			}
+			return false;
+		}
+
+
 	}
 
     public class InputHandler
