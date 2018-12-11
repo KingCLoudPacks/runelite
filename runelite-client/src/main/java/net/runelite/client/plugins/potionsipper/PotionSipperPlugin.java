@@ -4,6 +4,7 @@ import com.loudpacks.script.combat.CombatScript;
 import javax.inject.Inject;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
 	name = "Potion Sipper",
@@ -16,15 +17,24 @@ public class PotionSipperPlugin extends Plugin
 	@Inject
 	private CombatScript combatScript;
 
+	@Inject
+	private PotionSipperOverlay overlay;
+
+	@Inject
+	private OverlayManager overlayManager;
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		combatScript.setRunning(true);
+		overlayManager.add(overlay);
+
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
 		combatScript.setRunning(false);
+		overlayManager.remove(overlay);
 	}
 }

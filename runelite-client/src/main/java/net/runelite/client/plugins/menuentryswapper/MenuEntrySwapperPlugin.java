@@ -532,6 +532,10 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			swap("use", option, target, true);
 		}
+		else if (option.equals("eat"))
+		{
+			swap("guzzle", option, target, false);
+		}
 	}
 
 	@Subscribe

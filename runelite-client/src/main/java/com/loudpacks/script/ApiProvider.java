@@ -176,6 +176,14 @@ public class ApiProvider {
 			return (match.isPresent()) ? match.get() : null;
 		}
 
+		public int getItemIndex(List<Integer> ids) {
+			List<WidgetItem> inventory = new ArrayList<>();
+			inventory.addAll(Arrays.asList(queryRunner.runQuery(new InventoryWidgetItemQuery())));
+			Optional<WidgetItem> match = inventory.stream().filter(item -> ids.contains(item.getId()) && item.getQuantity() > 0).findFirst();
+			WidgetItem item = match.orElse(null);
+			return (item != null) ? item.getIndex() : -1;
+		}
+
 		public WidgetItem getItem(List<Integer> ids) {
 			List<WidgetItem> inventory = new ArrayList<>();
 			inventory.addAll(Arrays.asList(queryRunner.runQuery(new InventoryWidgetItemQuery())));
@@ -211,6 +219,15 @@ public class ApiProvider {
 		}
 
 
+		public boolean interact(WidgetItem item, float xOffset, float yOffset, ConditionalSleep condition)
+		{
+			if (item != null) {
+				inputHandler.leftClick(item.getCanvasBounds(), xOffset, yOffset);
+				condition.sleep();
+				return true;
+			}
+			return false;
+		}
 	}
 
     public class InputHandler
@@ -290,6 +307,16 @@ public class ApiProvider {
 			}
 		}
 
+		public void leftClick(Rectangle rect, float xOffset, float yOffset)
+		{
+			if (rect != null)
+			{
+				int rx = (int) rect.getMinX() + 1 + (int) (xOffset * rect.getWidth());
+				int ry = (int) rect.getMinY() + 1 + (int) (yOffset * rect.getHeight());
+				moveMouse(rx, ry);
+				leftClick();
+			}
+		}
 	}
 }
 
