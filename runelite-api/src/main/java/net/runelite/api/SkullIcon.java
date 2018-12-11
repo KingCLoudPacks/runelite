@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018, Infinitay <https://github.com/Infinitay>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,30 +22,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.http.service.updatecheck;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
+package net.runelite.api;
 
-@Getter
-class RSConfig
+/**
+ * An enumeration of PK skulls.
+ */
+public enum SkullIcon
 {
-	private final Map<String, String> appletProperties = new HashMap<>();
-	private final Map<String, String> classLoaderProperties = new HashMap<>();
-
-	String getCodeBase()
-	{
-		return classLoaderProperties.get("codebase");
-	}
-
-	String getInitialJar()
-	{
-		return classLoaderProperties.get("initial_jar");
-	}
-
-	String getInitialClass()
-	{
-		return classLoaderProperties.get("initial_class").replace(".class", "");
-	}
+	/**
+	 * White skull from PVP world or wilderness
+	 */
+	SKULL,
+	/**
+	 * Red skull from Tzhaar Fight Pits
+	 */
+	SKULL_FIGHT_PIT,
+	/**
+	 * Deadman mode sprite carrying one key
+	 */
+	DEAD_MAN_ONE,
+	/**
+	 * Deadman mode sprite carrying two keys
+	 */
+	DEAD_MAN_TWO,
+	/**
+	 * Deadman mode sprite carrying three keys
+	 */
+	DEAD_MAN_THREE,
+	/**
+	 * Deadman mode sprite carrying four keys
+	 */
+	DEAD_MAN_FOUR,
+	/**
+	 * Deadman mode sprite carrying five keys
+	 */
+	DEAD_MAN_FIVE,
 }
